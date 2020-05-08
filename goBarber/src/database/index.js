@@ -1,20 +1,25 @@
 import Sequelize from 'sequelize';
 
 import User from '../app/models/User';
+import File from '../app/models/File';
 
 import databaseconfig from '../config/database';
 
-const models = [User];
+const models = [User, File];
 
 class Database {
   constructor() {
-    this.connection = new Sequelize(databaseconfig);
     this.init();
   }
 
   init() {
     // eslint-disable-next-line arrow-parens
-    models.map((model) => model.init(this.connection));
+    this.connection = new Sequelize(databaseconfig);
+    models
+      .map((model) => model.init(this.connection))
+      .map(
+        (model) => model.associate && model.associate(this.connection.models)
+      );
   }
 }
 
